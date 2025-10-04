@@ -24,7 +24,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     static final int MILLISECONDS_PER_FRAME = 20;
     // This is the length of each interval processed by the game in milliseconds.
 
-    static final int DOOR_SPEED = 11; 
+    static final int SPEED = 10; 
 
     // This is the number of different doors.
     static final int NUMBER_OF_COLORS = 4;
@@ -36,10 +36,15 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     static int currentLane = NUMBER_OF_LANES / 2;
 
     int doorSpawnCooldown = 60; // Number of intervals until next door spawns
-    int keySpawnCooldown = 30; // Number of intervals until next key spawns
+    int keySpawnCooldown = 30;
+    int zombieSpawnCooldown = 45 + 30 * random.nextInt(8);
+
+    static final int SPAWN_FREQUENCY = 1;
     
     Image playerImage;
     Image peopleIcon;
+    Image heartIcon;
+    Image zombieImage;
     Image[] doorImages = new Image[NUMBER_OF_COLORS];
     Image[] keyImages = new Image[NUMBER_OF_COLORS];
     Image[] keyIcons = new Image[NUMBER_OF_COLORS];
@@ -54,6 +59,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     int[] currentKeys = new int[NUMBER_OF_COLORS];
 
     int score = 0;
+    int health = 0;
 
     KeysOfSurvival() {
         JFrame frame = new JFrame("Rescue Runner");
@@ -74,6 +80,8 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     void loadImages() {
         playerImage = new ImageIcon("Player.png").getImage();
         peopleIcon = new ImageIcon("PeopleIcon.png").getImage();
+        heartIcon = new ImageIcon("HeartIcon.png").getImage();
+        zombieImage = new ImageIcon("Zombie.png").getImage();
 
         for (int i = 0; i < NUMBER_OF_COLORS; i++) {
             doorImages[i] = new ImageIcon(colorNames[i] + "Door.png").getImage();
@@ -106,7 +114,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
 
         // Draw obstacles
         for (Obstacle obstacle : obstacles) {
-            Image image = null;
+            Image image = zombieImage;
             if (obstacle instanceof Door) {
                 image = doorImages[obstacle.color];
             } else if (obstacle instanceof Key) {
@@ -133,13 +141,22 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
         g.drawImage(peopleIcon, 20, 12, 5, 10, this);
         g.drawString("People saved: " + score, 28, 20);
 
+        // Show health
+        if (health > 8) { // If there are too many hearts, show them differently
+            g.drawImage(heartIcon, 20, 30, 10, 10, this);
+            g.drawString("× " + health, 33, 39);
+        } else {
+            for (int i = 0; i < health; i++) {
+                g.drawImage(heartIcon, 20 + 15 * i, 30, 10, 10, this);
+            }
+        }
 
         // Show keys
         for (int i = 0; i < NUMBER_OF_COLORS; i++) {
             if (currentKeys[i] > 0) {
-                g.setColor(colors[i]);
                 g.drawImage(keyIcons[i], FRAME_WIDTH - 135 + 30 * i, 10, 20, 10, this);
                 if (currentKeys[i] > 1) {
+                    g.setColor(colors[i]);
                     g.drawString("" + currentKeys[i], FRAME_WIDTH - 135 + 30 * i, 30);
                 }
             }
@@ -147,24 +164,34 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     }
 
     void spawnDoor() {
-        obstacles.add(new Door(random.nextInt(NUMBER_OF_LANES), -PLAYER_HEIGHT, DOOR_SPEED));
+        obstacles.add(new Door(random.nextInt(NUMBER_OF_LANES), -PLAYER_HEIGHT, SPEED));
     }
 
     void spawnKey() {
-        obstacles.add(new Key(random.nextInt(NUMBER_OF_LANES), -PLAYER_HEIGHT, DOOR_SPEED));
+        obstacles.add(new Key(random.nextInt(NUMBER_OF_LANES), -PLAYER_HEIGHT, SPEED));
+    }
+
+    void spawnZombie() {
+        obstacles.add(new Zombie(random.nextInt(NUMBER_OF_LANES), -PLAYER_HEIGHT, SPEED));
     }
 
     public void actionPerformed(ActionEvent e) {
-        doorSpawnCooldown--;
-        if (doorSpawnCooldown < 0) {
+        doorSpawnCooldown -= SPAWN_FREQUENCY;
+        if (doorSpawnCooldown < 1) {
             doorSpawnCooldown = 60;
             spawnDoor();
         }
         
-        keySpawnCooldown--;
-        if (keySpawnCooldown < 0) {
+        keySpawnCooldown -= SPAWN_FREQUENCY;
+        if (keySpawnCooldown < 1) {
             keySpawnCooldown = 60;
             spawnKey();
+        }
+
+        zombieSpawnCooldown -= SPAWN_FREQUENCY;
+        if (zombieSpawnCooldown < 1) {
+            zombieSpawnCooldown = 30 + 30 * random.nextInt(8);
+            spawnZombie();
         }
 
         for (Obstacle obstacle : obstacles) {
@@ -199,6 +226,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
         int y; // The distance of this obstacle from the top edge of the framel
         int speed;
         int color = 0;
+        boolean passed = false; // Whether the player passed this obstacle
 
         /**
          * Obstacles are any objects other than the player.
@@ -222,8 +250,6 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     }
 
     class Door extends Obstacle {
-        boolean passed = false; // Whether the player passed this obstacle
-
         Door(int lane, int y, int speed) {
             super(lane, y, speed);
             color = random.nextInt(NUMBER_OF_COLORS);
@@ -238,6 +264,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
                     } else {
                         currentKeys[color]--;
                         score++;
+                        health++;
                     }
                 }
                 passed = true;
@@ -246,8 +273,6 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     }
 
     class Key extends Obstacle {
-        boolean passed = false; // Whether the player passed this obstacle
-
         Key(int lane, int y, int speed) {
             super(lane, y, speed);
             color = random.nextInt(NUMBER_OF_COLORS);
@@ -265,7 +290,33 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
         }
     }
 
+    class Zombie extends Obstacle {
+        Zombie(int lane, int y, int speed) {
+            super(lane, y, speed);
+        }
+
+        void move() {
+            super.move();
+            if (y > PLAYER_Y && !passed) {
+                if (currentLane == lane) {
+                    gameOver();
+                }
+                passed = true;
+            }
+        }
+    }
+
     void gameOver() {
+        if (health >= 3) {
+            int option = JOptionPane.showConfirmDialog(this,
+                "You hit an obstacle.\nDo you want to use three hearts to continue?",
+                "Continue?",
+                JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                health -= 3;
+                return;
+            }
+        }
         timer.stop();
         JOptionPane.showMessageDialog(panel, "Game Over!\nYour Score: " + score);
         System.exit(0);
