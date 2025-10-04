@@ -13,7 +13,7 @@ public class RescueRunner extends JPanel implements ActionListener, KeyListener 
     static final int FRAME_WIDTH = 414;
     static final int FRAME_HEIGHT = 738;
 
-    static final int NUMBER_OF_LANES = 11;
+    static final int NUMBER_OF_LANES = 3;
 
     static final int PLAYER_WIDTH = Math.min(FRAME_WIDTH / NUMBER_OF_LANES, 80);
     static final int PLAYER_HEIGHT = Math.min(FRAME_WIDTH / NUMBER_OF_LANES, 80);
@@ -24,7 +24,7 @@ public class RescueRunner extends JPanel implements ActionListener, KeyListener 
     static final int MILLISECONDS_PER_FRAME = 20;
     // This is the length of each interval processed by the game in milliseconds.
 
-    static final int DOOR_SPEED = 3; 
+    static final int DOOR_SPEED = 11; 
 
     // This is the number of different doors.
     static final int NUMBER_OF_COLORS = 4;
@@ -52,6 +52,8 @@ public class RescueRunner extends JPanel implements ActionListener, KeyListener 
     ArrayList<Obstacle> obstacles = new ArrayList<Obstacle>();
     Obstacle removed = null;
     int[] currentKeys = new int[NUMBER_OF_COLORS];
+
+    int score = 0;
 
     RescueRunner() {
         JFrame frame = new JFrame("Rescue Runner");
@@ -129,7 +131,7 @@ public class RescueRunner extends JPanel implements ActionListener, KeyListener 
         // Write score
         g.setColor(Color.BLACK);
         g.drawImage(peopleIcon, 20, 12, 5, 10, this);
-        g.drawString("People saved: 0", 28, 20);
+        g.drawString("People saved: " + score, 28, 20);
 
 
         // Show keys
@@ -235,6 +237,7 @@ public class RescueRunner extends JPanel implements ActionListener, KeyListener 
                         gameOver();
                     } else {
                         currentKeys[color]--;
+                        score++;
                     }
                 }
                 passed = true;
@@ -264,7 +267,7 @@ public class RescueRunner extends JPanel implements ActionListener, KeyListener 
 
     void gameOver() {
         timer.stop();
-        JOptionPane.showMessageDialog(panel, "Game Over!\nYour Score: 0");
+        JOptionPane.showMessageDialog(panel, "Game Over!\nYour Score: " + score);
         System.exit(0);
     }
 
