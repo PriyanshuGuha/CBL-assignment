@@ -223,7 +223,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
 
     class Obstacle {
         int lane; // The lane in which this obstacle spawns, indexed from 0 from left to right
-        int y; // The distance of this obstacle from the top edge of the framel
+        int y; // The distance of this obstacle from the top edge of the frame
         int speed;
         int color = 0;
         boolean passed = false; // Whether the player passed this obstacle
