@@ -24,7 +24,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     static final int MILLISECONDS_PER_FRAME = 20;
     // This is the length of each interval processed by the game in milliseconds.
 
-    static final int SPEED = 10; 
+    static final int SPEED = 20; 
 
     // This is the number of different doors.
     static final int NUMBER_OF_COLORS = 4;
@@ -39,7 +39,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     int keySpawnCooldown = 30;
     int zombieSpawnCooldown = 45 + 30 * random.nextInt(8);
 
-    static final int SPAWN_FREQUENCY = 1;
+    static final int SPAWN_FREQUENCY = 2;
     
     Image playerImage;
     Image peopleIcon;
@@ -223,7 +223,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
 
     class Obstacle {
         int lane; // The lane in which this obstacle spawns, indexed from 0 from left to right
-        int y; // The distance of this obstacle from the top edge of the framel
+        int y; // The distance of this obstacle from the top edge of the frame
         int speed;
         int color = 0;
         boolean passed = false; // Whether the player passed this obstacle
