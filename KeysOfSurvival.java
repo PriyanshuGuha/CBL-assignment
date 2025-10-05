@@ -62,12 +62,13 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
     int health = 0;
 
     KeysOfSurvival() {
+        setPreferredSize(new Dimension(FRAME_WIDTH, FRAME_HEIGHT));
+
         JFrame frame = new JFrame("Rescue Runner");
-        frame.getContentPane().setBackground(Color.CYAN);
-        frame.setSize(FRAME_WIDTH, FRAME_HEIGHT);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(this);
+        frame.add(this); // Connects the JPanel and JFrame
         frame.setResizable(false);
+        frame.pack(); // Sets the size of the frame
         frame.setVisible(true);
 
         frame.addKeyListener(this);
@@ -223,7 +224,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
 
     class Obstacle {
         int lane; // The lane in which this obstacle spawns, indexed from 0 from left to right
-        int y; // The distance of this obstacle from the top edge of the framel
+        int y; // The distance of this obstacle from the top edge of the frame
         int speed;
         int color = 0;
         boolean passed = false; // Whether the player passed this obstacle
