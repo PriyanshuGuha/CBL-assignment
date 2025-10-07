@@ -92,6 +92,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
         }
     }
 
+    @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g); // Initial painting
         
@@ -177,6 +178,7 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
         obstacles.add(new Zombie(random.nextInt(NUMBER_OF_LANES), -PLAYER_HEIGHT, SPEED));
     }
 
+    @Override
     public void actionPerformed(ActionEvent e) {
         // Countdown for each obstacle type. If countdown reaches 0, spawn that obstacle.
         doorSpawnCooldown -= SPAWN_FREQUENCY;
