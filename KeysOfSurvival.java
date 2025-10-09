@@ -35,12 +35,14 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
 
     static int currentLane = NUMBER_OF_LANES / 2;
 
-    int doorSpawnCooldown = 60; // Number of intervals until next door spawns
-    int keySpawnCooldown = 30;
-    int zombieSpawnCooldown = 45 + 30 * random.nextInt(8);
+    static final int obstacleIntervals = 15; // This is a defined time period.
+
+    int doorSpawnCooldown = 4 * obstacleIntervals;
+    int keySpawnCooldown = 2 * obstacleIntervals;
+    int zombieSpawnCooldown = (3 + 2 * random.nextInt(8)) * obstacleIntervals;
 
     static final double SPAWN_FREQUENCY = 1;
-    // Number that influences how fast objects spawn.
+    // Number that influences how fast objects spawn
     
     Image playerImage;
     Image peopleIcon;
@@ -183,19 +185,19 @@ public class KeysOfSurvival extends JPanel implements ActionListener, KeyListene
         // Countdown for each obstacle type. If countdown reaches 0, spawn that obstacle.
         doorSpawnCooldown -= SPAWN_FREQUENCY;
         if (doorSpawnCooldown < 1) {
-            doorSpawnCooldown += 60;
+            doorSpawnCooldown += 4 * obstacleIntervals;
             spawnDoor();
         }
         
         keySpawnCooldown -= SPAWN_FREQUENCY;
         if (keySpawnCooldown < 1) {
-            keySpawnCooldown += 60;
+            keySpawnCooldown += 4 * obstacleIntervals;
             spawnKey();
         }
 
         zombieSpawnCooldown -= SPAWN_FREQUENCY;
         if (zombieSpawnCooldown < 1) {
-            zombieSpawnCooldown += 30 + 30 * random.nextInt(8);
+            zombieSpawnCooldown += (2 + 2 * random.nextInt(8)) * obstacleIntervals;
             spawnZombie();
         }
 
